@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { TeamMember } from '@/lib/types';
-import { useRouter } from 'next/navigation';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { KeyRound, Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setUser, patchUser, clearAuth, setStatus, setShowPasswordModal } from '@/store/slices/authSlice';
@@ -41,7 +41,7 @@ const UserContext = createContext<UserContextType>({
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  const { replace, push } = useSafeRouter();
   const qc = useQueryClient();
 
   const currentUser = useAppSelector((s) => s.auth.user);
@@ -66,7 +66,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (user.is_paused && user.role !== 'super-admin') {
         api.auth.logout();
         dispatch(clearAuth());
-        router.replace('/login?paused=true');
+        replace('/login?paused=true');
         return;
       }
       dispatch(setUser(user));
@@ -79,7 +79,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       api.auth.logout();
       dispatch(clearAuth());
     }
-  }, [dispatch, router, qc]);
+  }, [dispatch, replace, qc]);
 
   useEffect(() => {
     loadSession();
@@ -113,8 +113,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     api.auth.logout();
     dispatch(clearAuth());
     qc.clear();
-    router.push('/login');
-  }, [dispatch, qc, router]);
+    push('/login');
+  }, [dispatch, qc, push]);
 
   // First-login password change (the bottom-right prompt).
   const [newPassword, setNewPassword] = useState('');

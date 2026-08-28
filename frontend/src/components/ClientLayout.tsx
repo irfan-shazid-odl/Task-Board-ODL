@@ -2,27 +2,28 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { UserProvider, useUser } from './UserContext';
 import ThemeProvider from './ThemeProvider';
 import AppProviders from '@/providers/AppProviders';
 import Sidebar from './Sidebar';
 import { Toaster } from 'sonner';
 import { useTheme } from './ThemeProvider';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { Loader2, Menu, Sun, Moon } from 'lucide-react';
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
+  const { push } = useSafeRouter();
   const { currentUser, loading } = useUser();
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   useEffect(() => {
     if (!loading && !currentUser && pathname !== '/login') {
-      router.push('/login');
+      push('/login');
     }
-  }, [currentUser, loading, pathname, router]);
+  }, [currentUser, loading, pathname, push]);
 
   if (loading) {
     return (

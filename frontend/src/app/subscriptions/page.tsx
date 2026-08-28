@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Plus, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUser } from '@/components/UserContext';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { Subscription } from '@/lib/types';
 import { useSubscriptions, useDeleteSubscription } from '@/hooks/queries/useSubscriptions';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
@@ -14,14 +14,14 @@ import { EMPTY_SUBSCRIPTION_FORM, type SubscriptionFormValues } from '@/features
 
 export default function SubscriptionsPage() {
   const { currentUser, loading: userLoading } = useUser();
-  const router = useRouter();
+  const { replace } = useSafeRouter();
 
   const isMember = currentUser?.role === 'Member';
 
   // Role guard
   useEffect(() => {
-    if (!userLoading && isMember) router.replace('/board');
-  }, [isMember, userLoading, router]);
+    if (!userLoading && isMember) replace('/board');
+  }, [isMember, userLoading, replace]);
 
   const { data: subscriptions = [], isLoading } = useSubscriptions(!!currentUser && !isMember);
   const deleteSubscription = useDeleteSubscription();

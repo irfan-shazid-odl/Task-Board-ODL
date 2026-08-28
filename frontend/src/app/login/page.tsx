@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useUser } from '@/components/UserContext';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { useTheme } from '@/components/ThemeProvider';
 import { KeyRound, Shield, Loader2, Mail, Ban, Sun, Moon, X } from 'lucide-react';
 import Image from 'next/image';
@@ -17,7 +18,7 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const { currentUser, refreshUser } = useUser();
   const { theme, toggleTheme } = useTheme();
-  const router = useRouter();
+  const { push } = useSafeRouter();
   const searchParams = useSearchParams();
   const isPaused = searchParams.get('paused') === 'true';
 
@@ -42,12 +43,12 @@ export default function LoginPage() {
   useEffect(() => {
     if (currentUser) {
       if (currentUser.role === 'Member' || currentUser.role === 'Lead') {
-        router.push('/board');
+        push('/board');
       } else {
-        router.push('/dashboard');
+        push('/dashboard');
       }
     }
-  }, [currentUser, router]);
+  }, [currentUser, push]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

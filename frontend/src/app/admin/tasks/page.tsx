@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useUser } from '@/components/UserContext';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { Zap, Plus } from 'lucide-react';
 import ProjectModal from '@/components/ProjectModal';
 import { useAdminTasksState } from './_hooks/useAdminTasksState';
@@ -17,15 +17,15 @@ const todayIsoDate = () => new Date().toLocaleDateString('en-CA');
 
 export default function AdminTasksPage() {
   const { currentUser, loading: userLoading } = useUser();
-  const router = useRouter();
+  const { replace } = useSafeRouter();
   const dispatch = useDispatch();
   const showTaskForm = useSelector((state: RootState) => state.adminTaskForm.showTaskForm);
 
   useEffect(() => {
     if (!userLoading && currentUser?.role === 'Member') {
-      router.replace('/board');
+      replace('/board');
     }
-  }, [currentUser, userLoading, router]);
+  }, [currentUser, userLoading, replace]);
 
   if (currentUser && currentUser.role === 'Member') {
     return (

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { api, subscribeToChanges } from '@/lib/api';
 import { useUser } from '@/components/UserContext';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { TaskStatus, TASK_STATUSES } from '@/lib/types';
 import { Zap } from 'lucide-react';
 
@@ -22,7 +22,7 @@ interface StatusCount {
 
 export default function DashboardPage() {
   const { currentUser, loading: userLoading, teamMembers } = useUser();
-  const router = useRouter();
+  const { replace } = useSafeRouter();
   const [totalActive, setTotalActive] = useState(0);
   const [statusCounts, setStatusCounts] = useState<StatusCount[]>(
     TASK_STATUSES.map(s => ({ status: s, count: 0 }))
@@ -161,9 +161,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!userLoading && (currentUser?.role === 'Member' || currentUser?.role === 'Lead')) {
-      router.replace('/board');
+      replace('/board');
     }
-  }, [currentUser, userLoading, router]);
+  }, [currentUser, userLoading, replace]);
 
   if (currentUser && (currentUser.role === 'Member' || currentUser.role === 'Lead')) {
     return (

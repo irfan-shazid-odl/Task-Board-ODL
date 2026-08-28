@@ -1,27 +1,27 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useUser } from '@/components/UserContext';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { Loader2 } from 'lucide-react';
 
 export default function Home() {
   const { currentUser, loading } = useUser();
-  const router = useRouter();
+  const { replace } = useSafeRouter();
 
   useEffect(() => {
     if (!loading) {
       if (currentUser) {
         if (currentUser.role === 'Member' || currentUser.role === 'Lead') {
-          router.replace('/board');
+          replace('/board');
         } else {
-          router.replace('/dashboard');
+          replace('/dashboard');
         }
       } else {
-        router.replace('/login');
+        replace('/login');
       }
     }
-  }, [currentUser, loading, router]);
+  }, [currentUser, loading, replace]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">

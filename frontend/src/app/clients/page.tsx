@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Plus, Building2, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Client } from '@/lib/types';
 import { useUser } from '@/components/UserContext';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { useClients, useDeleteClient } from '@/hooks/queries/useClients';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
 import ClientFormModal from '@/features/clients/components/ClientFormModal';
@@ -13,15 +13,15 @@ import ClientsTable from '@/features/clients/components/ClientsTable';
 
 export default function ClientsPage() {
   const { loading: userLoading, currentUser } = useUser();
-  const router = useRouter();
+  const { replace } = useSafeRouter();
 
   const isMember = currentUser?.role === 'Member';
   const canManage = !!currentUser && !isMember;
 
   // Role guard — Members can't access Clients.
   useEffect(() => {
-    if (!userLoading && isMember) router.replace('/board');
-  }, [isMember, userLoading, router]);
+    if (!userLoading && isMember) replace('/board');
+  }, [isMember, userLoading, replace]);
 
   const { data: clients = [], isLoading } = useClients(!!currentUser && !isMember);
   const deleteClient = useDeleteClient();

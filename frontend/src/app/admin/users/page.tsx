@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Users, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUser } from '@/components/UserContext';
+import { useSafeRouter } from '@/hooks/useSafeRouter';
 import { TeamMember, SYSTEM_ADMIN_EMAIL } from '@/lib/types';
 import { useTeamMembers, useDeleteUser } from '@/hooks/queries/useTeamMembers';
 import DeleteConfirmModal from '@/components/DeleteConfirmModal';
@@ -13,7 +13,7 @@ import UsersTable from '@/features/users/components/UsersTable';
 
 export default function AdminUsersPage() {
   const { currentUser } = useUser();
-  const router = useRouter();
+  const { replace } = useSafeRouter();
 
   const { data: teamMembers = [] } = useTeamMembers(!!currentUser && currentUser.role !== 'Member');
   const deleteUser = useDeleteUser();
@@ -29,9 +29,9 @@ export default function AdminUsersPage() {
   // Security check - Only super-admin, Admin, and Lead should see this content
   useEffect(() => {
     if (currentUser && currentUser.role === 'Member') {
-      router.replace('/board');
+      replace('/board');
     }
-  }, [currentUser, router]);
+  }, [currentUser, replace]);
 
   if (!currentUser || currentUser.role === 'Member') {
     return (
